@@ -121,6 +121,6 @@ class RealTimeGraphApp(tk.Tk):
 
 
 if __name__ == '__main__':
+    print("Changes")
     app = RealTimeGraphApp()
-
     app.mainloop()

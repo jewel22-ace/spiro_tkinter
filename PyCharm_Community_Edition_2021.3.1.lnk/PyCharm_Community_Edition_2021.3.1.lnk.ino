@@ -5,5 +5,5 @@ void setup() {
 void loop() {
   int output = random(-100, 100); // Generate a random number between 0 and 100
   Serial.println(output); // Send the output number to the Serial port
-  delay(1000); // Wait for 1 second before sending the next number
+  delay(100); // Wait for 1 second before sending the next number
 }
