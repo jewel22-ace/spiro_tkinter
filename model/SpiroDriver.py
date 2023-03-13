@@ -24,7 +24,7 @@ class spirodriver():
             try:
                 data = int(self.ser.readline().decode().strip())
                 self.data.append(data)
-                #print(data)
+                print(data)
             except ValueError:
                 pass
         

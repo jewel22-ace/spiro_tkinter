@@ -5,15 +5,13 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import threading
 import serial
-from SpiroDriver import spirodriver
+from model.SpiroDriver import spirodriver
 
 plt.style.use('ggplot')
 
 
 class constant:
     handler = None
-
-
 constant()
 
 
@@ -132,19 +130,6 @@ class RealTimeGraphApp(tk.Tk):
         self.read_thread_flag = False
 
         # establishing serial communication
-
-    def read_from_serial(self):
-        # Read data from the serial port and add it to the deque
-        ser = serial.Serial('COM4', 9600)
-        while self.read_thread_flag:
-            try:
-                data = int(ser.readline().decode().strip())
-                self.data.append(data)
-                print(data)
-            except ValueError:
-                pass
-
-        ser.close()
 
     def start_animation(self):
         # Create a new thread for the animation process
