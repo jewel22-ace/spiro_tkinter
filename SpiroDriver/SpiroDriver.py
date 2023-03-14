@@ -1,6 +1,8 @@
 import serial
 import threading
 from collections import deque
+import random
+import time
 
 
 class spirodriver():
@@ -27,6 +29,16 @@ class spirodriver():
                 print(data)
             except ValueError:
                 pass
+    
+    def signal_acquisition_rand(self):
+        while self.read_thread_flag:
+            try:
+                data=random.randint(-100, 100)
+                self.data.append(data)
+                print(data)
+                time.sleep(0.1)
+            except ValueError:
+                pass
         
     
     def get_buffer(self):
@@ -37,7 +49,7 @@ class spirodriver():
     
     def start_acquisition(self):
         self.read_thread_flag=True 
-        self.read_thread = threading.Thread(target=self.signal_acquisition)
+        self.read_thread = threading.Thread(target=self.signal_acquisition_rand)
         self.read_thread.daemon = True
         self.read_thread.start()
 

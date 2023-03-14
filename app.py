@@ -5,13 +5,15 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import threading
 import serial
-from model.SpiroDriver import spirodriver
+from SpiroDriver.SpiroDriver import spirodriver
 
 plt.style.use('ggplot')
 
 
 class constant:
     handler = None
+
+
 constant()
 
 
@@ -186,8 +188,8 @@ class RealTimeGraphApp(tk.Tk):
 
 
 if __name__ == '__main__':
-    print("Changes")
+
     constant.handler = spirodriver()
-    constant.handler.connect_device('COM4')
+    # constant.handler.connect_device('COM4')
     app = RealTimeGraphApp()
     app.mainloop()
