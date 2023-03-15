@@ -26,7 +26,7 @@ class spirodriver():
             try:
                 data = int(self.ser.readline().decode().strip())
                 self.data.append(data)
-                print(data)
+                #print(data)
             except ValueError:
                 pass
     
@@ -35,7 +35,7 @@ class spirodriver():
             try:
                 data=random.randint(-100, 100)
                 self.data.append(data)
-                print(data)
+                #print(data)
                 time.sleep(0.1)
             except ValueError:
                 pass
@@ -43,7 +43,7 @@ class spirodriver():
     
     def get_buffer(self):
 
-        print(self.data)
+        #print(self.data)
         return self.data
         
     

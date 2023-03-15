@@ -1,75 +1,65 @@
-import tkinter as Tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.animation import FuncAnimation
-import matplotlib.pyplot as plt
-
-from view.view import TopFrameView
 from model.signal import signal
+from SpiroDriver.SpiroDriver import spirodriver
+import tkinter as Tk
+import random
+from collections import deque
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import threading
+from view.view import TopFrameView
+from controller import controller
+import serial
 
 plt.style.use('ggplot')
 
+
 class constant:
     handler = None
-    live_feature = None
+
+
 constant()
 
 
-class app(Tk.tk):
-    labelx = 300
-    labely = 300
-
-    START_COL = 0
-    GRAPH_COL = 1
-    LABLE_COL = 2
-    ENTRY_COL = 3
-    LAST_COL = 4
-
-    COL0_WIDTH = 5
-    LABEL_COL_WIDTH = 20
-    LABEL_WIDTH = 10
-    ENTRY_WIDTH = 20
-    ENTRY_COL_WIDTH = 20
-    BUTTOM_COL_WIDTH = COL0_WIDTH
-    LAST_COL_WIDTH = 5
-
-    ROW0_HEIGHT = 2
-    BUTTOM_ROW_HEIGHT = 2
-    LABEL_HEIGHT = 2
-    max_val = None
-    def __init__(self):
+class app(Tk.Tk):
+    def __init__(self, ):
         super().__init__()
         self.title('BreathOut')
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.model = signal()
 
-        self.signals = Signals([], [], 0, 0)
-        self.dp_features = DpFeatures()
-        
-        self.max_val = Tk.StringVar()
-        self.min_val = Tk.StringVar()
-        self.median25_val = Tk.StringVar()
-        self.median75_val = Tk.StringVar()
-        self.median_val = Tk.StringVar()
-        self.mode_val = Tk.StringVar()
-        self.mean_val = Tk.StringVar()
-        self.sample_rate_val = Tk.StringVar()
-        self.transfer_speed_val = Tk.StringVar()
+        self.controller = controller(self, self.model)
 
-        self.ui_update_loop = True
+        self.top_frame = TopFrameView(self)
+        self.top_frame.pack(side=Tk.TOP, pady=20)
+        self.top_frame.set_signals(self.model)
+        self.top_frame.set_controller(self.controller)
 
-        self.top_frame= TopFrameView()
-        self.top_frame = TopFrameView(
-            self, highlightbackground="gray", highlightthickness=1)
-        self.top_frame.pack(side=Tk.TOP, padx=20, pady=20)
-        self.top_frame.set_dp_features(self.dp_features)
-        self.top_frame.set_signals(self.signals)
+        self.start_data_worker_thread()
 
-        self.thread_flag = False
-        self.read_thread_flag = False
+    def start_data_worker_thread(self):
+        print("In")
+        # start worker threads
+        self.process_hardware_data_thread = threading.Thread(
+            target=self.process_hardware_data)
+        self.process_hardware_data_thread.daemon = True
+        self.process_hardware_data_thread.start()
 
+    def process_hardware_data(self):
+        print("In")
+        while True:
+            self.model.raw_rand_signal = constant.handler.get_buffer()
+            print(self.model.raw_rand_data)
 
-        def animation_thread(self):
-            while self.thread_flag:
-                
-                pass
+    def on_closing(self):
+        print('Quit')
+        self.start_data_worker_thread.join()
+        self.destroy()
 
 
-        
+if __name__ == '__main__':
+
+    constant.handler = spirodriver()
+    constant.handler.start_acquisition()
+
+    app = app()
+    app.mainloop()
