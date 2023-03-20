@@ -49,16 +49,20 @@ class app(Tk.Tk):
         while True:
             self.model.raw_rand_signal = constant.handler.get_buffer()
             print(self.model.raw_rand_data)
+            if not self.winfo_exists():
+                break
 
     def on_closing(self):
         print('Quit')
-        self.start_data_worker_thread.join()
+        self.process_hardware_data_thread.join()
+        constant.handler.stop_acquisition()
         self.destroy()
 
 
 if __name__ == '__main__':
 
     constant.handler = spirodriver()
+    constant.handler.connect_device('COM4')
     constant.handler.start_acquisition()
 
     app = app()

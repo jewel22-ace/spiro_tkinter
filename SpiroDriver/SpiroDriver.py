@@ -49,13 +49,16 @@ class spirodriver():
     
     def start_acquisition(self):
         self.read_thread_flag=True 
-        self.read_thread = threading.Thread(target=self.signal_acquisition_rand)
+        self.read_thread = threading.Thread(target=self.signal_acquisition)
         self.read_thread.daemon = True
         self.read_thread.start()
 
     def stop_acquisition(self):
         self.read_thread_flag=False
         self.read_thread.join()
+        print('In')
+
+
         
         
 
