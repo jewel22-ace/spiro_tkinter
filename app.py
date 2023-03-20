@@ -5,35 +5,43 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import threading
 import serial
+from Spiro_package.spiro import Spiro
+
+plt.style.use('ggplot')
+
+
+class constant:
+    handler = None
+
+
+constant()
 
 
 class RealTimeGraphApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
+        fig = plt.gcf()
+        fig.set_size_inches(8.5, 4.5)
+
         self.title("Real Time Graph")
 
         # Create the plot
-        self.fig = plt.Figure()
+        self.fig = plt.gcf()
         self.ax = self.fig.add_subplot(111)
         self.ax.set_ylim([-100, 100])
-        self.line, = self.ax.plot([], [], lw=2)
+        self.line, = self.ax.plot([], [], lw=1)
 
         # Create a deque to hold the data points
-        self.data = deque([0] * 100, maxlen=100)
+        self.data = deque([0] * 1000, maxlen=1000)
 
         # Create the canvas to display the plot
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
         # Create a label to display the data
-        self.data_label = tk.Label(self, text="", font=("Helvetica", 14))
-        self.data_label.pack(side=tk.BOTTOM, padx=10, pady=10)
 
         # Create a text box to display the plotted data
-        self.text_box = tk.Text(
-            self, height=10, width=30, font=("Helvetica", 14))
-        self.text_box.pack(side=tk.RIGHT, padx=10, pady=10)
 
         # Create a start button
         self.start_button = tk.Button(
@@ -45,6 +53,10 @@ class RealTimeGraphApp(tk.Tk):
             self, text="Stop", command=self.stop_animation)
         self.stop_button.pack(side=tk.BOTTOM, padx=10, pady=10)
 
+        self.save_button = tk.Button(
+            self, text="Save", command=self.save_data)
+        self.save_button.pack(side=tk.BOTTOM, padx=10, pady=10)
+
         self.start_button.config(state=tk.NORMAL)
         self.stop_button.config(state=tk.DISABLED)
         # Initialize the animation thread
@@ -52,6 +64,9 @@ class RealTimeGraphApp(tk.Tk):
         self.read_thread_flag = False
 
         # establishing serial communication
+
+    def save_data(self):
+        constant.handler.save_data(self.data, 'Test_data')
 
     def read_from_serial(self):
         # Read data from the serial port and add it to the deque
@@ -109,12 +124,6 @@ class RealTimeGraphApp(tk.Tk):
             self.canvas.draw()
 
             # Update the data label
-            self.data_label.config(text="Data: {}".format(data))
-
-            # Update the text box with the plotted data
-
-            self.text_box.delete('1.0', tk.END)
-            self.text_box.insert(tk.END, data)
 
             # Wait for a short amount of time to avoid overloading the system
             self.after(10)
@@ -122,5 +131,6 @@ class RealTimeGraphApp(tk.Tk):
 
 if __name__ == '__main__':
     app = RealTimeGraphApp()
+    constant.handler = Spiro()
 
     app.mainloop()
